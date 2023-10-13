@@ -150,49 +150,50 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 16);
         });
 
-        // Attack Event Listener
+        let lastTouchTime = 0;  // 保存上一次觸摸的時間
+
         document.addEventListener('touchend', function (e) {
-            if (!isAttacking && !isColliding) {
-                // 播放泡泡音效
-                const bubbleSound = document.getElementById('bubbleSound');
-                bubbleSound.currentTime = 0;
-                bubbleSound.play();
+            let currentTime = new Date().getTime();
+            let tapLength = currentTime - lastTouchTime;
+            lastTouchTime = currentTime;
 
-                // 創建泡泡
-                const bubbleImage = document.createElement('img');
-                bubbleImage.src = './asset/coffee.png';
-                bubbleImage.style.position = 'absolute';
-                const playerHeight = playerImage.getBoundingClientRect().height;
-                bubbleImage.style.bottom = `${parseInt(playerImage.style.bottom) + 25}px`;
-                bubbleImage.style.left = `${parseInt(playerImage.style.left) + 50}px`; // 基於玩家位置
-                gameArea.appendChild(bubbleImage);
-                bubbles.push(bubbleImage);
+            // 如果兩次觸摸的時間間隔小於300ms（可以調整此數值），則視為雙擊
+            if (tapLength < 300 && tapLength > 0) {
+                if (!isAttacking && !isColliding) {
+                    // 播放泡泡音效
+                    const bubbleSound = document.getElementById('bubbleSound');
+                    bubbleSound.currentTime = 0;
+                    bubbleSound.play();
 
-                isAttacking = true;
-                clearInterval(runningAnimation);
-                attackAnimationFrame = 1;
-                playerImage.src = `./asset/player/player.png`;
+                    // 創建泡泡
+                    const bubbleImage = document.createElement('img');
+                    bubbleImage.src = './asset/coffee.png';
+                    bubbleImage.style.position = 'absolute';
+                    const playerHeight = playerImage.getBoundingClientRect().height;
+                    bubbleImage.style.bottom = `${parseInt(playerImage.style.bottom) + 25}px`;
+                    bubbleImage.style.left = `${parseInt(playerImage.style.left) + 50}px`; // 基於玩家位置
+                    gameArea.appendChild(bubbleImage);
+                    bubbles.push(bubbleImage);
 
-                attackAnimation = setInterval(function () {
-                    attackAnimationFrame++;
-                    if (attackAnimationFrame > 3) {
-                        attackAnimationFrame = 1;
-                        clearInterval(attackAnimation);
-                        isAttacking = false;
-                        startRunningAnimation();
-                        return;
-                    }
+                    isAttacking = true;
+                    clearInterval(runningAnimation);
+                    attackAnimationFrame = 1;
                     playerImage.src = `./asset/player/player.png`;
-                }, 150);
-            }
-        });
 
-        document.addEventListener('touchend', function (e) {
-            if (isAttacking) {
-                isAttacking = false;
-                clearInterval(attackAnimation);
-                startRunningAnimation();
+                    attackAnimation = setInterval(function () {
+                        attackAnimationFrame++;
+                        if (attackAnimationFrame > 3) {
+                            attackAnimationFrame = 1;
+                            clearInterval(attackAnimation);
+                            isAttacking = false;
+                            startRunningAnimation();
+                            return;
+                        }
+                        playerImage.src = `./asset/player/player.png`;
+                    }, 150);
+                }
             }
+            // 不需要再有一個單獨的'touchend'監聽器，所以這部分不需要
         });
 
         setInterval(function () {
