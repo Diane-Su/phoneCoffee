@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吱可思大冒險</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="game.js" defer></script>
+</head>
+
+<body>
+    <div class="gameWrapper">
+        <div id="gameArea" class="gameArea">
+            <img id="startGame" class="centeredButton" src="./asset/bg/7162657.png" alt="Start Game">
+            <img id="retryGame" class="retryButton" src="./asset/bg/7162657.png" alt="Retry Game"
+                style="display: none;">
+            <div class="statusBar">
+                <div class="hearts">
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                </div>
+                <div class="score">分數: <span id="playerScore">0</span></div>
+                <div class="powerUpCount">補充包: <span id="powerUpCounter">0</span></div>
+            </div>
+            <div class="gameOver hidden">Game Over</div>
+        </div>
+    </div>
+    <audio id="bgMusic1" preload="auto" loop>
+        <source src="./asset/sounds/game_bgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusic2" preload="auto" loop>
+        <source src="./asset/sounds/game_bgm.wav" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusic3" preload="auto" loop>
+        <source src="./asset/sounds/game_bgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusic4" preload="auto" loop>
+        <source src="./asset/sounds/game_bgm.wav" type="audio/mpeg">
+    </audio>
+    <audio id="jumpSound">
+        <source src="./asset/sounds/jump.wav" type="audio/mpeg">
+    </audio>
+    <audio id="bubbleSound">
+        <source src="./asset/sounds/pop0.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="enemyDeathSound">
+        <source src="./asset/sounds/hit.wav" type="audio/mpeg">
+    </audio>
+    <audio id="healthRecoverySound">
+        <source src="./asset/sounds/heal.wav" type="audio/mpeg">
+    </audio>
+</body>
+
+</html>

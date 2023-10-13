@@ -1,0 +1,136 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #e6e6e6;
+    margin: 0;
+}
+
+.gameWrapper {
+    border: 1px solid black;
+    position: relative;
+}
+
+.statusBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 70px;
+    background-image: url('asset/bg/gui.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* 根據實際的 gui.png 調整這個高度 */
+    z-index: 10;
+    /* 確保 statusBar 會出現在 gameArea 的前面 */
+}
+
+.statusBar {
+    display: flex;
+}
+
+.hearts {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+    width: 130px;
+    justify-content: space-evenly;
+    align-items: start;
+}
+
+.heart {
+    width: 30px;
+    /* 根據 heart.png 的實際大小調整 */
+    height: 30px;
+    /* 根據 heart.png 的實際大小調整 */
+    background-image: url('asset/heart.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    /* 設定愛心之間的間距 */
+}
+
+.score {
+    position: absolute;
+    top: 20px;
+    right: 440px;
+    font-size: 20px;
+    color: white;
+    z-index: 11;
+    /* 確保在 statusBar 的上面 */
+}
+
+.powerUpCount {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    /* 或其他合適的位置 */
+    font-size: 20px;
+    color: white;
+    z-index: 11;
+    /* 確保在 statusBar 的上面 */
+}
+
+.gameArea {
+    width: 945px;
+    height: 370px;
+    position: relative;
+    overflow: hidden;
+}
+
+.centeredButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: 0.3s;
+    /* 根據您的圖片大小調整以下兩行 */
+    width: 150px;
+    /* 或其他您希望的寬度 */
+    height: auto;
+    /* 保持圖片的比例 */
+}
+
+.centeredButton:hover {
+    opacity: 0.8;
+    /* 為鼠標懸停在圖片上時增加一個淡出效果 */
+}
+
+.hidden {
+    display: none;
+}
+
+.retryButton {
+    position: absolute;
+    top: 60%;
+    /* 將圖片定位在 "Game Over" 文字下方 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: 0.3s;
+    width: 150px;
+    height: auto;
+}
+
+.retryButton:hover {
+    opacity: 0.8;
+}
+
+.gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: white;
+    z-index: 20;
+    /* 確保在所有其他元素之上 */
+}
+
+.transparent {
+    opacity: 0.5;
+}
