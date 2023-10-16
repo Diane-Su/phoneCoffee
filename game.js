@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const gameArea = document.getElementById('gameArea');
     const startButton = document.getElementById('startGame');
-    const retryButton = document.getElementById('retryGame');
-
+    const retryButton = document.getElementById("retryGame");
+    let isGameOver = false;  // 在遊戲開始前初始化
     let scrollSpeed = 2;  // 可以調整這個數值來控制背景滾動的速度
     let enemyScrollSpeed = 18;  // 控制怪物的滾動速度
     let boosterpackSpeed = 4;  // 我假設這裡是你原本的滾動速度，你可以提高此值以加快速度
@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function startGame() {
+        isGameOver = false;
         startButton.style.display = 'none';
         const bg1 = document.createElement('img');
         const bg2 = document.createElement('img');
@@ -52,14 +53,19 @@ document.addEventListener('DOMContentLoaded', function () {
         bg2.style.position = 'absolute';
         bg1.style.top = '0';
         bg1.style.left = '0';
-        const gameAreaWidth = gameArea.offsetWidth;  // 獲取gameArea的當前寬度
         bg2.style.top = '0';
-        bg2.style.left = `${gameAreaWidth}px`;  // 使用當前寬度來初始化bg2的位置
+        bg1.style.width = '100%';  // 設定寬度為 100%
+        bg1.style.height = 'auto'; // 自動調整高度
+        bg2.style.width = '100%';  // 設定寬度為 100%
+        bg2.style.height = 'auto'; // 自動調整高度
         gameArea.appendChild(bg1);
         gameArea.appendChild(bg2);
         let playerScore = 0;
         let powerUpCount = 0;
         musicElements[currentMusicIndex].play();
+        retryButton.style.display = 'none'; // 在遊戲開始時隱藏重試按鈕
+        const gameWidth = gameArea.offsetWidth;
+        bg2.style.left = `${gameWidth}px`;
 
         clearInterval(backgroundScrollInterval);
         backgroundScrollInterval = setInterval(function () {
@@ -68,12 +74,11 @@ document.addEventListener('DOMContentLoaded', function () {
             bg1.style.left = `${newLeft1}px`;
             bg2.style.left = `${newLeft2}px`;
 
-            // 重置背景位置，保持滾動連續
-            if (newLeft1 <= -gameAreaWidth) {
-                bg1.style.left = `${newLeft2 + gameAreaWidth}px`;
+            if (newLeft1 <= -gameWidth) {
+                bg1.style.left = `${newLeft2 + gameWidth}px`;
             }
-            if (newLeft2 <= -gameAreaWidth) {
-                bg2.style.left = `${newLeft1 + gameAreaWidth}px`;
+            if (newLeft2 <= -gameWidth) {
+                bg2.style.left = `${newLeft1 + gameWidth}px`;
             }
         }, 16);
 
@@ -82,18 +87,20 @@ document.addEventListener('DOMContentLoaded', function () {
         playerImage.style.position = 'absolute';
         playerImage.style.bottom = '40px';
         playerImage.style.left = '10px';
+        playerImage.style.width = '10%';  // 設定寬度為 15% 來代表玩家的寬度 (這是一個示例值，您可以根據需要調整)
+        playerImage.style.height = '40%'; // 保持圖片的寬高比
         gameArea.appendChild(playerImage);
         let jumpHeight = 0;
         const jumpSpeed = 4;
         let jumpAnimation;
         let fallAnimation;
-        let runningAnimation;
+        this.runningAnimation;
         let isColliding = false; // 新增這行
         let playerAnimationFrame = 1;
 
         function startRunningAnimation() {
-            clearInterval(runningAnimation);  // 確保停止任何現有的跑步動畫
-            runningAnimation = setInterval(function () {
+            clearInterval(this.runningAnimation);  // 確保停止任何現有的跑步動畫
+            this.runningAnimation = setInterval(function () {
                 playerAnimationFrame++;
                 if (playerAnimationFrame > 3) {
                     playerAnimationFrame = 1;
@@ -108,6 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Jump Event Listener
         document.addEventListener('touchstart', function (e) {
+            if (isGameOver) {
+                return;
+            }
+
             // 若在之前的事件中已被碰撞，則不做任何事
             if (isColliding) return;
 
@@ -159,24 +170,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 如果兩次觸摸的時間間隔小於300ms（可以調整此數值），則視為雙擊
             if (tapLength < 300 && tapLength > 0) {
+                if (isGameOver) {
+                    return;
+                }
+
                 if (!isAttacking && !isColliding) {
                     // 播放泡泡音效
                     const bubbleSound = document.getElementById('bubbleSound');
-                    bubbleSound.currentTime = 0;
+                    bubbleSound.currentTime = 0; // 確保每次都從頭開始播放
                     bubbleSound.play();
-
                     // 創建泡泡
                     const bubbleImage = document.createElement('img');
                     bubbleImage.src = './asset/coffee.png';
                     bubbleImage.style.position = 'absolute';
-                    const playerHeight = playerImage.getBoundingClientRect().height;
-                    bubbleImage.style.bottom = `${parseInt(playerImage.style.bottom) + 25}px`;
-                    bubbleImage.style.left = `${parseInt(playerImage.style.left) + 50}px`; // 基於玩家位置
+                    bubbleImage.style.bottom = `${parseInt(playerImage.style.bottom) + 60}px`;
+                    const gameWidth = gameArea.offsetWidth;  // 獲取遊戲視窗的寬度
+                    bubbleImage.style.left = `${parseInt(playerImage.style.left) + 80}px`; // 基於玩家位置
                     gameArea.appendChild(bubbleImage);
                     bubbles.push(bubbleImage);
-
                     isAttacking = true;
-                    clearInterval(runningAnimation);
+                    clearInterval(this.runningAnimation);
                     attackAnimationFrame = 1;
                     playerImage.src = `./asset/player/player.png`;
 
@@ -193,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }, 150);
                 }
             }
-            // 不需要再有一個單獨的'touchend'監聽器，所以這部分不需要
         });
 
         setInterval(function () {
@@ -266,14 +278,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const obstacles = []; // 存儲當前的障礙物
         const BUFFER = 10 // 增加或減少此值以調整與障礙物的碰撞緩衝區大小
         const MBUFFER = 70; // 增加或減少此值以調整與怪物的碰撞緩衝區大小
-        let runningAnimationTimeout;
+        this.runningAnimationTimeout;
 
         function generateObstacle() {
             const obstacleImage = document.createElement('img');
             obstacleImage.src = './asset/obstacle/rock2.png';
             obstacleImage.style.position = 'absolute';
-            obstacleImage.style.bottom = '42px';
-            obstacleImage.style.left = '945px'; // 從右側開始
+            obstacleImage.style.bottom = '20px';  // 設定障礙物離地面為20px
+            const gameWidth = gameArea.offsetWidth;  // 獲取遊戲視窗的寬度
+            obstacleImage.style.left = `${gameWidth}px`;  // 設定障礙物的left為遊戲視窗的寬度
             gameArea.appendChild(obstacleImage);
             obstacles.push(obstacleImage);
             obstacleImage.isHit = false;
@@ -285,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         clearInterval(generateObstacleInterval);  // 清除現有的生成障礙物的 setInterval
-        generateObstacleInterval = setInterval(generateObstacle, 8000);  // 初始每8秒生成新的障礙物
+        generateObstacleInterval = setInterval(generateObstacle, 8000);  // 初始每8秒生成新的障礙物                
 
         clearInterval(obstacleMoveInterval);
         obstacleMoveInterval = setInterval(function () {
@@ -311,8 +324,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     isColliding = true;
                     playerImage.style.filter = 'brightness(0.5)'; // 讓玩家圖片的顏色變深
-                    clearInterval(runningAnimation);
-                    clearTimeout(runningAnimationTimeout);
+                    clearInterval(this.runningAnimation);
+                    clearTimeout(this.runningAnimationTimeout);
                     hideHeart(); // 隱藏一顆愛心
                     obstacle.isHit = true; // 標記該障礙物已被撞擊
 
@@ -333,11 +346,15 @@ document.addEventListener('DOMContentLoaded', function () {
         function generateEnemy() {
             const currentTime = new Date().getTime();
             const elapsedTime = (currentTime - startTime) / 1000;  // 當遊戲運行時間，單位：秒
+            const statusBarHeight = document.querySelector('.statusBar').offsetHeight;  // 獲取 statusBar 的高度
+            const obstacleHeight = 50;  // 假設障礙物的高度為50px，您可以根據需要調整
+            const maxTopPosition = gameArea.offsetHeight - obstacleHeight - statusBarHeight;
             const enemyImage = document.createElement('img');
             enemyImage.src = './asset/obstacle/devil/walk/enemy_walk.gif';
             enemyImage.style.position = 'absolute';
-            enemyImage.style.top = `${Math.random() * (200 - 170 - 60) + 60}px`; // 在60px到200px之間
-            enemyImage.style.left = '945px';
+            enemyImage.style.top = `${Math.random() * (maxTopPosition - statusBarHeight) + statusBarHeight}px`;  // 保證敵人出現在 statusBar 下面且在障礙物的上面
+            const gameWidth = gameArea.offsetWidth;  // 獲取遊戲視窗的寬度
+            enemyImage.style.left = `${gameWidth}px`;
             gameArea.appendChild(enemyImage);
             enemies.push(enemyImage);
             let randomEnemyTime;
@@ -379,8 +396,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     isColliding = true;
                     playerImage.style.filter = 'brightness(0.5)'; // 讓玩家圖片的顏色變深
-                    clearInterval(runningAnimation);
-                    clearTimeout(runningAnimationTimeout);
+                    clearInterval(this.runningAnimation);
+                    clearTimeout(this.runningAnimationTimeout);
                     hideHeart(); // 隱藏一顆愛心
                     enemy.isHit = true; // 標記該怪物已被撞擊
 
@@ -414,11 +431,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let generatePowerUpInterval; // 儲存生成補充包的setInterval的引用
 
         function generatePowerUp() {
+            const statusBarHeight = document.querySelector('.statusBar').offsetHeight;  // 獲取 statusBar 的高度
+            const obstacleHeight = 50;  // 假設障礙物的高度為50px，您可以根據需要調整
+            const maxTopPosition = gameArea.offsetHeight - obstacleHeight - statusBarHeight;
+
             const powerUpImage = document.createElement('img');
             powerUpImage.src = './asset/buff/bunny.png';  // 改成單張圖片的路徑
             powerUpImage.style.position = 'absolute';
-            powerUpImage.style.top = `${Math.random() * (200 - 96 - 30) + 30}px`;  //30~200px
-            powerUpImage.style.left = '945px'; // 從右側開始
+            powerUpImage.style.top = `${Math.random() * (maxTopPosition - statusBarHeight) + statusBarHeight}px`;  // 保證補充包出現在 statusBar 下面且在障礙物的上面
+            const gameWidth = gameArea.offsetWidth;  // 獲取遊戲視窗的寬度
+            powerUpImage.style.left = `${gameWidth}px`; // 從右側開始
             gameArea.appendChild(powerUpImage);
             powerUps.push(powerUpImage);
 
@@ -458,10 +480,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function retryGame() {
         // 重新開始遊戲邏輯...
         // 清除所有 setInterval 和 setTimeout
+        retryButton.style.display = 'none';
         clearInterval(backgroundScrollInterval);
         clearInterval(obstacleMoveInterval);
-        clearInterval(runningAnimation);
-        clearTimeout(runningAnimationTimeout);
+        clearInterval(this.runningAnimation);
+        clearTimeout(this.runningAnimationTimeout);
         clearInterval(enemyMoveInterval);
         // 清除生成元素的 setInterval
         clearInterval(generateObstacleInterval);
@@ -470,14 +493,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function gameOver() {
+        isGameOver = true;  // 遊戲結束時設為 true
         document.querySelector('.gameOver').classList.remove('hidden');
         // 停止所有的動畫和生成障礙物或怪物的計時器
         clearInterval(generateObstacleInterval);
         clearInterval(obstacleMoveInterval);
         clearInterval(generateEnemyInterval);
         clearInterval(enemyMoveInterval);
-        clearInterval(runningAnimation);
-        clearTimeout(runningAnimationTimeout);
+        clearInterval(generatePowerUpInterval);
+        clearInterval(this.runningAnimation);
+        clearTimeout(this.runningAnimationTimeout);
         const gameOverDiv = document.querySelector(".gameOver");
         gameOverDiv.innerHTML = `Game Over`;
     }
