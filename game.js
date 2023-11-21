@@ -477,25 +477,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 16);
     }
 
+    // 定義 retryGame 函數，當玩家選擇重試遊戲時調用
     function retryGame() {
-        // 重新開始遊戲邏輯...
-        // 清除所有 setInterval 和 setTimeout
-        retryButton.style.display = 'none';
+        retryButton.style.display = 'none';  // 隱藏重試按鈕
+        // 清除所有相關的定時器和超時，以停止遊戲中的所有動畫和事件
         clearInterval(backgroundScrollInterval);
         clearInterval(obstacleMoveInterval);
         clearInterval(this.runningAnimation);
         clearTimeout(this.runningAnimationTimeout);
         clearInterval(enemyMoveInterval);
-        // 清除生成元素的 setInterval
         clearInterval(generateObstacleInterval);
         clearInterval(generateEnemyInterval);
         clearInterval(generatePowerUpInterval);
     }
 
+    // 定義 gameOver 函數，當玩家遊戲結束時調用
     function gameOver() {
-        isGameOver = true;  // 遊戲結束時設為 true
-        document.querySelector('.gameOver').classList.remove('hidden');
-        // 停止所有的動畫和生成障礙物或怪物的計時器
+        isGameOver = true;  // 設定遊戲結束的標記為真  
+        document.querySelector('.gameOver').classList.remove('hidden');  // 顯示遊戲結束的提示
+        // 清除所有相關的定時器和超時
         clearInterval(generateObstacleInterval);
         clearInterval(obstacleMoveInterval);
         clearInterval(generateEnemyInterval);
@@ -503,7 +503,19 @@ document.addEventListener('DOMContentLoaded', function () {
         clearInterval(generatePowerUpInterval);
         clearInterval(this.runningAnimation);
         clearTimeout(this.runningAnimationTimeout);
+
+        // 更新遊戲結束的提示訊息
         const gameOverDiv = document.querySelector(".gameOver");
         gameOverDiv.innerHTML = `Game Over`;
+
+        // 顯示開始按鈕，並設置其層級，準備讓玩家重新開始遊戲
+        startButton.style.display = 'block';
+        startButton.style.zIndex = 99;
+        startButton.onclick = resetGame;  // 設置開始按鈕點擊後調用 resetGame 函數 
+    }
+
+    // 定義 resetGame 函數，用於重置遊戲
+    function resetGame() {
+        window.location.reload();  // 重新加載當前頁面，從而重新開始遊戲
     }
 });
